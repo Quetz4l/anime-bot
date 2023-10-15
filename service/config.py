@@ -1,6 +1,5 @@
 from src import secret
 
-
 TEST_MODE = True
 
 # logger.add("logs/log.json",
@@ -14,10 +13,6 @@ TEST_MODE = True
 settings = {
     'API_TOKEN': secret.API_TOKEN,
     'ADMIN_ID': secret.ADMIN_ID,
-    'EMOJI_ON' : "✅ ",
-    'EMOJI_OFF' : "❌ ",
+    'EMOJI_ON': "✅ ",
+    'EMOJI_OFF': "❌ ",
 }
-
-
-
-

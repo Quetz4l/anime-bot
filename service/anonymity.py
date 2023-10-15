@@ -5,6 +5,7 @@ from loguru import logger
 
 PROXY_LIST = []
 
+
 def update_proxy_list():
     scrapper = Scrapper(category='US', print_err_trace=False)
     data = scrapper.getProxies()
@@ -15,10 +16,9 @@ def update_proxy_list():
     logger.success('Loaded ' + str(len(proxy_list)) + ' proxies')
 
     global PROXY_LIST
-    PROXY_LIST =  proxy_list
+    PROXY_LIST = proxy_list
 
     # return [{'http://': 'http://74.205.128.200:80'}, {'http://': 'http://13.66.222.94:80'}]
-
 
 
 def get_fake_user_agent():
@@ -27,8 +27,7 @@ def get_fake_user_agent():
 
 
 def get_random_proxy():
-    return PROXY_LIST[randint(0,len(PROXY_LIST))]
-
+    return PROXY_LIST[randint(0, len(PROXY_LIST)-1)]
 
 
 update_proxy_list()

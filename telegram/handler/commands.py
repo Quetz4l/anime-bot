@@ -85,8 +85,9 @@ from telegram.loader import dp
 
 """Commands"""
 
+
 # Команда подписки
-@dp.message_handler(commands=['hello', 'hi'])
+@dp.message_handler(commands=['hello', 'hi', 'привет'])
 async def hello(message: types.Message):
     await message.answer(f"Привет, {message.from_user.first_name}!")
 
@@ -98,7 +99,9 @@ async def start(message: types.Message):
 
 
 """Utils"""
-# Ответ на неузнаную команду
+
+
+# Ответ на неузнанную команду
 @dp.message_handler()
 async def echo(message: types.Message):
     await message.answer('Нья ?')

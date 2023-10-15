@@ -3,6 +3,7 @@ from telegram.loader import dp
 from telegram import anime_posts
 from service import sql
 
+
 @dp.message_handler(text=['Мой плейлист'])
 async def show_my_playlist(message: Message):
     user_t_id = message.from_user.id
@@ -15,5 +16,3 @@ async def show_my_playlist(message: Message):
     for sql_playlist in sql_playlists:
         sql_anime = await sql.get_anime_by_id(sql_playlist.anime_id)
         await anime_posts.send_anime_post(sql_anime, user_t_id, sql_playlist)
-
-

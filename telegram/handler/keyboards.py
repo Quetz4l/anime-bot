@@ -1,6 +1,7 @@
 from aiogram import types
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-from service import sql
+from aiogram.types import ReplyKeyboardRemove
+
+from service import sql, utils
 from telegram.loader import bot, dp
 from telegram.handler import states
 from telegram.keyboard import keyboards
@@ -16,7 +17,7 @@ async def start(message: types.Message):
 @dp.callback_query_handler(lambda c: "anime_post_watched_" in c.data)
 async def anime_post_watched_(callback_query: types.CallbackQuery):
     anime_id = int(callback_query.data.split('_')[-1])
-    watched_series = int(callback_query.message.text.split(' ')[-3])
+    watched_series = int(callback_query.message.caption.split(' ')[-3])
     user_t_id = callback_query.from_user.id
     user_id = await sql.get_user_id_by_t_id(user_t_id)
     anime_state = await sql.set_playlist_series(user_id, anime_id, watched_series)
@@ -63,29 +64,20 @@ async def first_test_state_case_met(message: types.Message):
 @dp.callback_query_handler(lambda c: "anime_post_subscribe_" in c.data)
 async def anime_post_subscribe_(callback_query: types.CallbackQuery):
     user_t_id = callback_query.from_user.id
-    user_id = await sql.get_user_id_by_t_id(user_t_id)
     anime_id = int(callback_query.data.split('_')[-1])
-    sql_anime = await sql.get_anime_by_id(anime_id)
 
-    status = await sql.subscribe_or_unsubscribe_to_anime(user_id, anime_id)
-    if status == 'added to db':
-        anime_id_whose_questing[user_id] = anime_id
-        await dp.current_state(user=user_t_id).set_state(states.Questions.how_many_series_user_watch)
-        await bot.send_message(user_t_id, 'Аниме добавленно в плейлист!\nСколько вы просмотрели?')
-    elif status == 'watching':
-        await bot.send_message(user_t_id, f'Вы подписались на {sql_anime.name}')
-    elif status == 'drop':
-        await bot.send_message(user_t_id, f'Вы отписались от {sql_anime.name}')
+    await utils.subscribe(user_t_id, anime_id)
 
-    await callback_query.message.edit_text(callback_query.message.text, reply_markup=await keyboards.get_post_settings(callback_query.message, anime_id))
+    await callback_query.message.edit_caption(caption =callback_query.message.caption, reply_markup=await keyboards.get_post_settings(callback_query.message, anime_id))
     await bot.answer_callback_query(callback_query.id)
+
 
 
 @dp.callback_query_handler(lambda c: "settings_" in c.data)
 async def anime_post_settings_(callback_query: types.CallbackQuery):
     anime_id = int(callback_query.data.split('_')[-1])
     keyboard = await keyboards.get_post_settings(callback_query.message, anime_id)
-    await  callback_query.message.edit_text(text=callback_query.message.text, reply_markup=keyboard)
+    await  callback_query.message.edit_caption(caption=callback_query.message.caption, reply_markup=keyboard)
 
 
 @dp.callback_query_handler(lambda c: "anime_post_back_" in c.data)
@@ -94,8 +86,7 @@ async def anime_post_settings_(callback_query: types.CallbackQuery):
     sql_anime = await sql.get_anime_by_id(anime_id)
     keyboard = await keyboards.get_post_keyboard(sql_anime)
 
-    await  callback_query.message.edit_text(text=callback_query.message.text, reply_markup=keyboard)
-
+    await  callback_query.message.edit_caption(caption=callback_query.message.caption, reply_markup=keyboard)
 
 
 @dp.callback_query_handler(lambda c: "anime_post_set_series_" in c.data)
@@ -107,3 +98,8 @@ async def anime_post_set_series_(callback_query: types.CallbackQuery):
     await dp.current_state(user=user_t_id).set_state(states.Questions.how_many_series_user_watch)
     await  callback_query.message.reply('Сколько вы просмотрели?', reply=False)
     await bot.answer_callback_query(callback_query.id)
+
+@dp.message_handler(text=['Закрыть'])
+async def close_keyboard(message: types.Message):
+    remove_keyboard = ReplyKeyboardRemove()
+    await message.reply(text="Закрыто", reply_markup=remove_keyboard)

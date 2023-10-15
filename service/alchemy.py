@@ -105,6 +105,7 @@ class Sql_anime_urls(Base):
     site = Column(String, nullable=False)
     url = Column(String, nullable=False, unique=True)
 
+
     def __init__(self, anime_id, url):
         self.anime_id = anime_id
         self.url = url
