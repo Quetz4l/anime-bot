@@ -35,7 +35,7 @@ async def get_anime_playlists(user_id, anime_id=None):
 
 async def get_users_by_anime_in_playlist(new_series, anime_id):
     sql_users = session.query(Sql_users) \
-        .join(Sql_anime_playlist).filter(Sql_anime_playlist.anime_id == anime_id, Sql_anime_playlist.series != new_series) \
+        .join(Sql_anime_playlist).filter(Sql_anime_playlist.anime_id == anime_id, Sql_anime_playlist.series != new_series, Sql_anime_playlist.state == 'watching') \
         .all()
     return sql_users
 
