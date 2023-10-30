@@ -39,6 +39,10 @@ async def start():
                     logger.error(f"Не вышло добавить аниме в базу! {e}")
         except Exception:
             logger.error("Парсинг не удался")
+            try:
+                logger.error(post.find('a', {'class': 'link_title_list'})['title'])
+            except:
+                pass
 
 
 async def add_anime_to_db_from_home_page(post):
